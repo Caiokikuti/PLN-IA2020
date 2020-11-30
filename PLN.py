@@ -12,6 +12,7 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.preprocessing import LabelBinarizer
 from sklearn.model_selection import train_test_split, KFold
 from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
+from sklearn.naive_bayes import GaussianNB, MultinomialNB
 nltk.download('stopwords')
 nltk.download('wordnet')
 
@@ -50,22 +51,16 @@ def classificacao(corpus, y):
     y_p = []
 
     for train_index, test_index in kf.split(corpus):
-        # print("TRAIN:", train_index, "TEST:", test_index)
-        
         x_train, x_test = corpus[train_index], corpus[test_index]
         vectorizer = TfidfVectorizer(ngram_range=(1, 2))
-        # vectorizer = CountVectorizer()
-        
+          
         x_train = vectorizer.fit_transform(x_train)
         x_test = vectorizer.transform(x_test)
         
-        # print(x_train.shape, x_test.shape)
-
         y_train, y_test = y[train_index], y[test_index]
 
-        # clf = SVC(kernel='linear')
         clf = LinearSVC()
-        # clf = KNeighborsClassifier(n_neighbors=5)
+        
         clf.fit(x_train, y_train.ravel())
         y_pred = clf.predict(x_test)
 
@@ -104,10 +99,6 @@ def main():
     dataSet['reviews_sem_norm'] = reviews
     dataSet['reviews_lem'] = reviews_lem
     # testar e treinar 
-    x_train, x_test, y_train, y_test = train_test_split(reviews_lem, dataSet['labelNum'], test_size=0.2, random_state=42)
-    vectorizer = TfidfVectorizer(ngram_range=(1,1), analyzer='word', max_features=100)
-    vectorizer.fit(x_train)
-    vectors = vectorizer.transform(x_train).todense()
 
     y_t, y_p = classificacao(dataSet['reviews_lem'], dataSet['labelNum'])
 
